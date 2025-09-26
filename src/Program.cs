@@ -62,6 +62,9 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("===> Migrations aplicadas com sucesso!");
         return; // Sai depois de aplicar migrations
     }
+
+    var services = scope.ServiceProvider;
+    await SeedData.InitializeAsync(services);
 }
 
 app.Run();
