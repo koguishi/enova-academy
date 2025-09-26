@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MyApi.Data;
+using enova_academy.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
