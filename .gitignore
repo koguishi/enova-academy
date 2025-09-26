@@ -1,0 +1,48 @@
+# Visual Studio / .NET build
+src/bin/
+src/obj/
+src/Debug/
+src/Release/
+.vscode/
+.vs/
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Pacotes e dependências
+*.nuget/
+*.nupkg
+*.snupkg
+packages/
+
+# Arquivos de publicação
+publish/
+
+# Configurações locais e segredos
+appsettings.json
+appsettings.*.json
+
+# Permite manter um exemplo para referência
+!appsettings.Example.json
+
+# User secrets (armazenados localmente)
+secrets.json
+
+# Teste de cobertura
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+
+# Cache do usuário
+*.user
+*.suo
+*.userosscache
+*.sln.docstates

@@ -1,0 +1,6 @@
+@enova_academy_HostAddress = http://localhost:5285
+
+GET {{enova_academy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
