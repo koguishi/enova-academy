@@ -37,7 +37,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -49,6 +49,20 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // Se o argumento --migrate for passado, aplica as migrations
+    if (args.Contains("--migrate"))
+    {
+        Console.WriteLine("===> Executando migrations...");
+        db.Database.Migrate();
+        Console.WriteLine("===> Migrations aplicadas com sucesso!");
+        return; // Sai depois de aplicar migrations
+    }
+}
 
 app.Run();
 
