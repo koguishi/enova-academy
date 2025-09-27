@@ -1,6 +1,8 @@
 using System.Text;
 using enova_academy.Application.Services;
 using enova_academy.Data;
+using enova_academy.Data.Repositories;
+using enova_academy.Domain.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +78,9 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<CourseService>();
 
 var app = builder.Build();
 
