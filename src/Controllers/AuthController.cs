@@ -29,6 +29,17 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
+    [Authorize]
+    [HttpGet("me/roles")]
+    public IActionResult GetRoles()
+    {
+        var roles = User.Claims
+                        .Where(c => c.Type == ClaimTypes.Role)
+                        .Select(c => c.Value)
+                        .ToList();
+        return Ok(roles);
+    }
+
     [HttpGet("me")]
     [Authorize]
     public async Task<IActionResult> Me()
