@@ -26,6 +26,9 @@ public class CourseConfig : IEntityTypeConfiguration<Course>
         builder.Property(m => m.Capacity)
             .HasColumnType("integer");
 
+        builder.HasIndex(c => new { c.Slug })
+           .IsUnique(true);            
+
         builder.ToTable("Courses");
     }
 }
