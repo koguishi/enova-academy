@@ -15,6 +15,9 @@ public class CourseService
 
     public async Task<CourseDto> CreateAsync(CourseDto dto)
     {
+        var dbCourse = await Courses.GetBySlugAsync(dto.Slug!);
+        if (dbCourse != null) throw new Exception("This Slug is already taken");
+        
         var course = new Course(
             dto.Title!,
             dto.Slug!,
