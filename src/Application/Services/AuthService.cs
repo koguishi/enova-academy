@@ -18,6 +18,7 @@ public class AuthService
             Email = email,
         };
         var result = await _userManager.CreateAsync(user, password);
+        await _userManager.AddToRoleAsync(user, "student");
         if (!result.Succeeded)
             throw new Exception("Erro ao criar usuário: " + string.Join(", ", result.Errors.Select(e => e.Description)));
     }
