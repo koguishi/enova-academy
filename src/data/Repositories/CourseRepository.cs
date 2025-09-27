@@ -26,6 +26,14 @@ public class CourseRepository : ICourseRepository
         return course;
     }
 
+    public async Task<Course?> GetBySlugAsync(string slug)
+    {
+        var course = await _context.Courses
+            .Where(p => p.Slug == slug)
+            .FirstOrDefaultAsync();
+        return course;
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

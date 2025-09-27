@@ -44,6 +44,14 @@ public class CoursesController(CourseService service) : ControllerBase
         return Ok(course);
     }
 
+    [HttpGet("{slug}")]
+    public async Task<ActionResult<CourseDto>> GetBySlug(string slug)
+    {
+        var course = await _service.ReadAsync(slug);
+        if (course is null) return NotFound();
+        return Ok(course);
+    }
+
     [Authorize(Roles = "ADMIN")]    
     [HttpPost]
     public async Task<ActionResult<CourseDto>> Create([FromBody] CourseDto dto)

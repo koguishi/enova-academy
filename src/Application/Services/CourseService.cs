@@ -47,6 +47,12 @@ public class CourseService
         return ToCourseDto(course);
     }
 
+    public async Task<CourseDto?> ReadAsync(string slug)
+    {
+        var course = await Courses.GetBySlugAsync(slug);
+        return ToCourseDto(course);
+    }
+
     public async Task UpdateAsync(Guid id, CourseDto dto)
     {
         var course = await Courses.GetByIdAsync(id)
