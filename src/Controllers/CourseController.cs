@@ -52,7 +52,7 @@ public class CoursesController(CourseService service) : ControllerBase
         return Ok(course);
     }
 
-    [Authorize(Roles = "ADMIN")]    
+    [Authorize(Roles = "ADMIN")]
     [HttpPost]
     public async Task<ActionResult<CourseDto>> Create([FromBody] CourseDto dto)
     {
@@ -68,6 +68,7 @@ public class CoursesController(CourseService service) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
 
+    [Authorize(Roles = "ADMIN")]
     [HttpPut("{id:Guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] CourseDto dto)
     {
@@ -84,19 +85,19 @@ public class CoursesController(CourseService service) : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "ADMIN")]
     [HttpDelete("{id:Guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
-            var course = await _service.ReadAsync(id);
-            if (course is null || !course.Id.HasValue)
-                return NotFound();
-            await _service.DeleteAsync(course.Id.Value);
+            await _service.DeleteAsync(id);
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return ex.Message.Contains("not found", StringComparison.CurrentCultureIgnoreCase)
+                ? NotFound(ex.Message)
+                : BadRequest(ex.Message);
         }
         return NoContent();
     }
