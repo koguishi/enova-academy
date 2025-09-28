@@ -12,11 +12,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
         : base(options) { }
 
     public DbSet<Course> Courses => Set<Course>();
+    public DbSet<Enrollment> Enrollments => Set<Enrollment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.ApplyConfiguration(new CourseConfig());
+        builder.ApplyConfiguration(new EnrollmentConfig());
     }    
 }
