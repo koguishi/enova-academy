@@ -48,10 +48,10 @@ public class Course
     public void Enroll(Enrollment enrollment)
     {
         if (IsFull())
-            throw new InvalidOperationException("Domain Exception: Course capacity exceeded.");
+            throw new CourseCapacityExceededException();
 
         if (StudentFound(enrollment.StudentId))
-            throw new InvalidOperationException("Domain Exception: Enrollment already taken for this Course");
+            throw new EnrollmentAlreadyTakenException();
 
         Enrollments!.Add(enrollment);
     }    

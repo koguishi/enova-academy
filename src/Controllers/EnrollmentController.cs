@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using enova_academy.Application.DTOs;
 using enova_academy.Application.Services;
+using enova_academy.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +49,14 @@ public class EnrollmentsController(EnrollmentService service) : ControllerBase
         {
             var enrollment = await _service.CreateAsync(dto, Guid.Parse(userId!));
             return CreatedAtAction(nameof(GetById), new { id = enrollment.Id }, enrollment);
+        }
+        catch (EnrollmentAlreadyTakenException ex)
+        {
+            return StatusCode(409, new { error = ex.Message });
+        }
+        catch (CourseCapacityExceededException ex)
+        {
+            return StatusCode(422, new { error = ex.Message });
         }
         catch (Exception ex)
         {
