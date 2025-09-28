@@ -18,20 +18,22 @@ public class CourseRepository : ICourseRepository
         await _context.Courses.AddAsync(course);
     }
 
-    public async Task<Course?> GetByIdAsync(Guid id)
+    public async Task<Course?> GetByIdAsync(Guid id, Boolean? loadEnrollments = false)
     {
-        var course = await _context.Courses
-            .Where(p => p.Id == id)
-            .FirstOrDefaultAsync();
-        return course;
+        IQueryable<Course> query = _context.Courses;
+        if (loadEnrollments.HasValue && loadEnrollments.Value)
+            query = query.Include(c => c.Enrollments);
+
+        return await query.FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<Course?> GetBySlugAsync(string slug)
+    public async Task<Course?> GetBySlugAsync(string slug, Boolean? loadEnrollments = false)
     {
-        var course = await _context.Courses
-            .Where(p => p.Slug == slug)
-            .FirstOrDefaultAsync();
-        return course;
+        IQueryable<Course> query = _context.Courses;
+        if (loadEnrollments.HasValue && loadEnrollments.Value)
+            query = query.Include(c => c.Enrollments);
+
+        return await query.FirstOrDefaultAsync(c => c.Slug == slug);
     }
 
     public async Task SaveChangesAsync()

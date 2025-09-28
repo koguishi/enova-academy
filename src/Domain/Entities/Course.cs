@@ -38,4 +38,21 @@ public class Course
         if (price.HasValue) Price = price.Value;
         if (capacity.HasValue) Capacity = capacity.Value;
     }
+
+    virtual public ICollection<Enrollment>? Enrollments { get; private set; } = [];
+
+    public bool IsFull() => (Enrollments?.Count ?? 0) >= Capacity;
+
+    public bool StudentFound(Guid studentId) => Enrollments!.Any(c => c.StudentId == studentId);
+
+    public void Enroll(Enrollment enrollment)
+    {
+        if (IsFull())
+            throw new InvalidOperationException("Domain Exception: Course capacity exceeded.");
+
+        if (StudentFound(enrollment.StudentId))
+            throw new InvalidOperationException("Domain Exception: Enrollment already taken for this Course");
+
+        Enrollments!.Add(enrollment);
+    }    
 }
