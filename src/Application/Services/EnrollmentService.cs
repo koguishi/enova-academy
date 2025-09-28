@@ -35,7 +35,7 @@ public class EnrollmentService
             ?? throw new Exception("Enrollment not found");
 
         if (enrollment.StudentId != userId && !isAdmin)
-            throw new UnauthorizedAccessException("You cannot delete this enrollment");            
+            throw new UnauthorizedAccessException("You cannot delete this enrollment");
 
         await Enrollments.DeleteAsync(enrollment);
     }
@@ -84,4 +84,21 @@ public class EnrollmentService
             Status = enrollment.Status,
         };
     }
+
+    public async Task<List<EnrollmentDto>> GetByStudentAsync(Guid requestedStudentId, string currentUserId, bool isAdmin)
+    {
+        if (!isAdmin && requestedStudentId.ToString() != currentUserId)
+            throw new UnauthorizedAccessException("You can only view your own enrollments.");
+
+        var enrollments = await Enrollments.GetByStudentIdAsync(requestedStudentId);
+
+        return enrollments.Select(e => new EnrollmentDto
+        {
+            Id = e.Id,
+            CourseId = e.CourseId,
+            StudentId = e.StudentId,
+            Status = e.Status
+        }).ToList();
+    }
+
 }

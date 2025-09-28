@@ -41,4 +41,12 @@ public class EnrollmentRepository : IEnrollmentRepository
     {
         return _context.Enrollments.AsQueryable();
     }
+
+    public async Task<List<Enrollment>> GetByStudentIdAsync(Guid studentId)
+    {
+        return await _context.Enrollments
+            .Where(e => e.StudentId == studentId)
+            .ToListAsync();
+    }
+
 }

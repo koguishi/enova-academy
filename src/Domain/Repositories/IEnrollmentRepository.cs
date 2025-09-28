@@ -9,4 +9,5 @@ public interface IEnrollmentRepository
     IQueryable<Enrollment> Query();
     Task DeleteAsync(Enrollment enrollment);
     Task SaveChangesAsync();
+    Task<List<Enrollment>> GetByStudentIdAsync(Guid studentId);
 }

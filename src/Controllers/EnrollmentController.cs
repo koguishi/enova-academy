@@ -29,7 +29,7 @@ public class EnrollmentsController(EnrollmentService service) : ControllerBase
             pageSize,
             enrollments
         });
-            
+
     }
 
     [HttpGet("{id:Guid}")]
@@ -59,7 +59,7 @@ public class EnrollmentsController(EnrollmentService service) : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var isAdmin = User.IsInRole("Admin");        
+        var isAdmin = User.IsInRole("ADMIN");
         try
         {
             await _service.DeleteAsync(id, Guid.Parse(userId!), isAdmin);
@@ -72,4 +72,22 @@ public class EnrollmentsController(EnrollmentService service) : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpGet("/students/{id:Guid}/enrollments")]
+    public async Task<IActionResult> GetEnrollments(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var isAdmin = User.IsInRole("ADMIN");
+
+        try
+        {
+            var result = await _service.GetByStudentAsync(id, userId, isAdmin);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 }
