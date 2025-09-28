@@ -81,6 +81,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<EnrollmentService>();
 
 var app = builder.Build();
 
