@@ -1,0 +1,87 @@
+using enova_academy.Application.DTOs;
+using enova_academy.Domain.Entities;
+using enova_academy.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+namespace enova_academy.Application.Services;
+
+public class EnrollmentService
+{
+    IEnrollmentRepository Enrollments { get; }
+    ICourseRepository Courses { get; }
+    public EnrollmentService(IEnrollmentRepository enrollments, ICourseRepository courses)
+    {
+        Enrollments = enrollments;
+        Courses = courses;
+    }
+
+    public async Task<EnrollmentDto> CreateAsync(EnrollmentCreateDto createDto, Guid studentId)
+    {
+        var course = await Courses.GetByIdAsync(createDto.CourseId, true)
+            ?? throw new Exception("Course not found");
+
+        var enrollment = new Enrollment(studentId, createDto.CourseId);
+        course.Enroll(enrollment);
+
+        await Enrollments.AddAsync(enrollment);
+        await Enrollments.SaveChangesAsync();
+
+        return ToEnrollmentDto(enrollment);
+    }
+
+    public async Task DeleteAsync(Guid id, Guid userId, bool isAdmin)
+    {
+        var enrollment = await Enrollments.GetByIdAsync(id)
+            ?? throw new Exception("Enrollment not found");
+
+        if (enrollment.StudentId != userId && !isAdmin)
+            throw new UnauthorizedAccessException("You cannot delete this enrollment");            
+
+        await Enrollments.DeleteAsync(enrollment);
+    }
+
+    public async Task<EnrollmentDto?> ReadAsync(Guid id)
+    {
+        var enrollment = await Enrollments.GetByIdAsync(id);
+        return ToEnrollmentDto(enrollment);
+    }
+
+    public async Task<(List<EnrollmentDto> Enrollments, int Total)> ListarEnrollmentsPagAsync(
+        int page = 1, int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        var query = Enrollments.Query();
+
+        var total = await query.CountAsync();
+        var enrollments = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (ToEnrollmentsDto(enrollments), total);
+    }
+
+    private static List<EnrollmentDto> ToEnrollmentsDto(List<Enrollment> enrollments)
+    {
+        var listDto = new List<EnrollmentDto>();
+        enrollments.ForEach(course =>
+        {
+            listDto.Add(ToEnrollmentDto(course));
+        });
+        return listDto;
+    }
+
+    private static EnrollmentDto ToEnrollmentDto(Enrollment? enrollment)
+    {
+        if (enrollment == null) return null!;
+        return new EnrollmentDto
+        {
+            Id = enrollment.Id,
+            StudentId = enrollment.StudentId,
+            CourseId = enrollment.CourseId,
+            Status = enrollment.Status,
+        };
+    }
+}
