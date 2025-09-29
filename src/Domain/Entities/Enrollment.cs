@@ -18,4 +18,9 @@ public class Enrollment
         CourseId = courseId;
         Id = Guid.NewGuid();
     }
+
+    public void SetStatus(string status)
+    {
+        Status = status;
+    }
 }
