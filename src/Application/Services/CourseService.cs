@@ -46,7 +46,7 @@ public class CourseService
         await Courses.DeleteAsync(course);
 
         // Invalida o cache
-        await _cache.RemoveAsync(CoursesCacheKey);        
+        await _cache.RemoveAsync(CoursesCacheKey);
     }
 
     public async Task<List<CourseDto>> ReadAllAsync()
@@ -91,7 +91,7 @@ public class CourseService
         course.Atualizar(dto.Title, dto.Slug, dto.Price, dto.Capacity);
         await Courses.SaveChangesAsync();
         // Invalida o cache
-        await _cache.RemoveAsync(CoursesCacheKey);        
+        await _cache.RemoveAsync(CoursesCacheKey);
     }
 
     public async Task<(List<CourseDto> Courses, int Total)> ListarCoursesPagAsync(
