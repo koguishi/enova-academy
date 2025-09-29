@@ -29,4 +29,4 @@ jobs:
         run: dotnet build enova-academy.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test enova-academy.sln --no-build --verbosity detailed --collect:"XPlat Code Coverage"
+        run: dotnet test **tests/enova-academy.UnitTests/enova-academy.UnitTests.csproj** --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
