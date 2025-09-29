@@ -79,6 +79,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddSingleton<SqsService>();
+builder.Services.AddHostedService<PaymentWorker>();
+
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
