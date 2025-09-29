@@ -20,13 +20,13 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore MyApp.sln
+        run: dotnet restore enova-academy.sln
 
       - name: Lint (check formatting)
         run: dotnet format --verify-no-changes --severity error || (echo "Code formatting issues found" && exit 1)
 
       - name: Build
-        run: dotnet build MyApp.sln --configuration Release --no-restore
+        run: dotnet build enova-academy.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test MyApp.sln --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        run: dotnet test enova-academy.sln --no-build --verbosity normal --collect:"XPlat Code Coverage"
