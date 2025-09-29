@@ -18,7 +18,7 @@ namespace MyApp.UnitTests.Application
                 .ReturnsAsync(new Course("Existente", "dotnet", 100m, 10)
             );
 
-            var cacheMock = new Mock<IDistributedCache>();                    
+            var cacheMock = new Mock<IDistributedCache>();
 
             var service = new CourseService(repoMock.Object, cacheMock.Object);
 
