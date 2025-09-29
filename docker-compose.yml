@@ -7,6 +7,9 @@ services:
     ports:
       - "6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - backend
+
   api:
     build: .
     container_name: enova-academy
@@ -26,6 +29,7 @@ services:
       - SQS_QUEUE_URL=http://localstack:4566/000000000000/payment-queue
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
+      - APP_USE_WEBHOOK=false
     networks:
       - backend
 

@@ -18,6 +18,14 @@ O ambiente utiliza **Docker Compose** para subir a aplicação junto com serviç
 * [SDK .NET Core 8.0](https://dotnet.microsoft.com/download)
 * renomear appsettings.example.json para appsettings.json
 
+## Webhook ou Worker ?
+
+Para usar webhook de pagamentos configure APP_USE_WEBHOOK=true no docker-compose.yml
+
+Se APP_USE_WEBHOOK=false, serão usados:
+ - SqsService -> simula fila (SQS) através do container localstack
+ - PaymentWorker : BackgroundService -> consome as mensagens da fila
+
 ## Subindo o ambiente
 
 ```bash
@@ -36,7 +44,7 @@ Isso iniciará todos os containers necessários.
 
 ## Inicialização do banco de dados
 
-Migrations roda automaticamente ao subir o container da API:
+Migrations roda automaticamente ao subir o container da API.
 
 ## Testando a API
 
