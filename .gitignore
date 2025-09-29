@@ -3,6 +3,8 @@ src/bin/
 src/obj/
 src/Debug/
 src/Release/
+tests/enova-academy.UnitTests/obj/
+tests/enova-academy.UnitTests/bin/
 .vscode/
 .vs/
 
