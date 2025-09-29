@@ -1,16 +1,21 @@
+using System.Text.Json;
 using enova_academy.Application.DTOs;
 using enova_academy.Domain.Entities;
 using enova_academy.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace enova_academy.Application.Services;
 
 public class CourseService
 {
     ICourseRepository Courses { get; }
-    public CourseService(ICourseRepository courses)
+    private readonly IDistributedCache _cache;
+    private const string CoursesCacheKey = "all_courses";
+    public CourseService(ICourseRepository courses, IDistributedCache cache)
     {
         Courses = courses;
+        _cache = cache;
     }
 
     public async Task<CourseDto> CreateAsync(CourseDto dto)
@@ -27,6 +32,9 @@ public class CourseService
         await Courses.AddAsync(course);
         await Courses.SaveChangesAsync();
 
+        // Invalida o cache
+        await _cache.RemoveAsync(CoursesCacheKey);
+
         return ToCourseDto(course);
     }
 
@@ -36,11 +44,30 @@ public class CourseService
             ?? throw new Exception("Course not found");
 
         await Courses.DeleteAsync(course);
+
+        // Invalida o cache
+        await _cache.RemoveAsync(CoursesCacheKey);        
     }
 
     public async Task<List<CourseDto>> ReadAllAsync()
     {
+        // 1. Tenta buscar do cache
+        var cached = await _cache.GetStringAsync(CoursesCacheKey);
+        if (!string.IsNullOrEmpty(cached))
+        {
+            return JsonSerializer.Deserialize<List<CourseDto>>(cached)!;
+        }
+
+        // 2. Se não tiver cache, busca do banco
         var courses = await Courses.GetAllAsync();
+
+        // 3. Salva no cache com TTL (ex: 5 minutos)
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        };
+        await _cache.SetStringAsync(CoursesCacheKey, JsonSerializer.Serialize(courses), cacheOptions);
+
         return ToCoursesDto(courses);
     }
 
@@ -63,6 +90,8 @@ public class CourseService
 
         course.Atualizar(dto.Title, dto.Slug, dto.Price, dto.Capacity);
         await Courses.SaveChangesAsync();
+        // Invalida o cache
+        await _cache.RemoveAsync(CoursesCacheKey);        
     }
 
     public async Task<(List<CourseDto> Courses, int Total)> ListarCoursesPagAsync(
