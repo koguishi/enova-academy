@@ -37,6 +37,9 @@ public class EnrollmentService
         if (enrollment.StudentId != userId && !isAdmin)
             throw new UnauthorizedAccessException("You cannot delete this enrollment");
 
+        if (enrollment.Status != "pending_payment")
+            throw new InvalidOperationException("Enrollment's status must be pending_payment");
+
         await Enrollments.DeleteAsync(enrollment);
     }
 
