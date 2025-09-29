@@ -10,9 +10,10 @@ namespace enova_academy.Controllers;
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class EnrollmentsController(EnrollmentService service) : ControllerBase
+public class EnrollmentsController(EnrollmentService service, SqsService sqsService) : ControllerBase
 {
     private readonly EnrollmentService _service = service;
+    private readonly SqsService _sqsService = sqsService;
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -48,6 +49,15 @@ public class EnrollmentsController(EnrollmentService service) : ControllerBase
         try
         {
             var enrollment = await _service.CreateAsync(dto, Guid.Parse(userId!));
+
+            // quando implementar o webhook ...
+            // var useWebhook = config.GetValue<bool>("APP_USE_WEBHOOK");
+            // if (!useWebhook)
+            // {
+            // }
+            await _sqsService.SendMessageAsync(
+                new PaymentRequestedEvent(enrollment!.Id!.Value));
+
             return CreatedAtAction(nameof(GetById), new { id = enrollment.Id }, enrollment);
         }
         catch (EnrollmentAlreadyTakenException ex)
