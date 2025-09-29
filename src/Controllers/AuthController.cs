@@ -54,7 +54,8 @@ public class AuthController : ControllerBase
         if (user == null)
             return NotFound();
 
-        return Ok(new {
+        return Ok(new
+        {
             user.Id,
             user.UserName,
             user.Email
@@ -73,7 +74,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-    }    
+    }
 
 
     [HttpPost("login")]

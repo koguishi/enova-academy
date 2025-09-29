@@ -55,6 +55,4 @@ public class SqsService
 
 public record PaymentRequestedEvent(
     Guid EnrollmentId
-    // Guid StudentId,
-    // Guid CourseId
 );

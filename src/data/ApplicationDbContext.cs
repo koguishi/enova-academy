@@ -20,5 +20,5 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
         builder.ApplyConfiguration(new CourseConfig());
         builder.ApplyConfiguration(new EnrollmentConfig());
-    }    
+    }
 }

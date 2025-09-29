@@ -54,5 +54,5 @@ public class Course
             throw new EnrollmentAlreadyTakenException();
 
         Enrollments!.Add(enrollment);
-    }    
+    }
 }

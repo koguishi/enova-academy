@@ -18,7 +18,7 @@ public class WebhooksController : ControllerBase
     public async Task<IActionResult> Payment([FromBody] PaymentRequest request)
     {
         var enrollment = await _context.Enrollments.FindAsync(request.EnrollmentId);
-        if (enrollment is null) return NotFound(new { error = "Enrollment not found" } );
+        if (enrollment is null) return NotFound(new { error = "Enrollment not found" });
 
         // Atualiza status conforme o request
         enrollment.SetStatus(request.Status);

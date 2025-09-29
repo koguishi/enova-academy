@@ -33,7 +33,7 @@ public class CoursesController(CourseService service) : ControllerBase
             pageSize,
             courses
         });
-            
+
     }
 
     [HttpGet("{id:Guid}")]

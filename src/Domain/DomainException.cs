@@ -7,12 +7,12 @@ public class DomainException : Exception
 
 public class CourseCapacityExceededException : DomainException
 {
-    public CourseCapacityExceededException() 
+    public CourseCapacityExceededException()
         : base("Course capacity exceeded.") { }
 }
 
 public class EnrollmentAlreadyTakenException : DomainException
 {
-    public EnrollmentAlreadyTakenException() 
+    public EnrollmentAlreadyTakenException()
         : base("Enrollment already taken for this course.") { }
 }

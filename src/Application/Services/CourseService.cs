@@ -17,7 +17,7 @@ public class CourseService
     {
         var dbCourse = await Courses.GetBySlugAsync(dto.Slug!);
         if (dbCourse != null) throw new Exception("This Slug is already taken");
-        
+
         var course = new Course(
             dto.Title!,
             dto.Slug!,
