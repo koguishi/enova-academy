@@ -7,11 +7,17 @@ services:
     ports:
       - "5000:80"
     depends_on:
+      localstack:
+        condition: service_started    
       db:
         condition: service_healthy
     environment:
       - ConnectionStrings__DefaultConnection=server=db;port=3306;database=mydb;user=root;password=root
       - ASPNETCORE_ENVIRONMENT=Development
+      - AWS_REGION=us-east-1
+      - SQS_QUEUE_URL=http://localstack:4566/000000000000/payment-queue
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
     networks:
       - backend
 
@@ -34,7 +40,31 @@ services:
       timeout: 5s
       retries: 5
 
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      # Volume para o script de inicialização
+      # Ele será executado quando o LocalStack estiver pronto
+      - ./init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh
+      # Volume para persistir dados (opcional, mas recomendado para manter a fila entre reinícios)
+      - localstack-data:/var/lib/localstack
+      # Montagem necessária para o LocalStack interagir com o Docker
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - backend
+    # comando padrão, roda em foreground (mantém container vivo)
+    command: ["localstack", "start", "--host"]
+
 volumes:
+  localstack-data:
   db_data:
 
 networks:
