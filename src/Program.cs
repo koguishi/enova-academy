@@ -80,7 +80,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddSingleton<SqsService>();
-builder.Services.AddHostedService<PaymentWorker>();
+
+// Lê da configuração ou variável de ambiente
+var useWebhook = builder.Configuration.GetValue<bool>("APP_USE_WEBHOOK");
+if (!useWebhook)
+    builder.Services.AddHostedService<PaymentWorker>();
 
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<CourseService>();

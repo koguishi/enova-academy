@@ -10,7 +10,8 @@ namespace enova_academy.Controllers;
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class EnrollmentsController(EnrollmentService service, SqsService sqsService) : ControllerBase
+public class EnrollmentsController(EnrollmentService service,
+    SqsService sqsService, IConfiguration config) : ControllerBase
 {
     private readonly EnrollmentService _service = service;
     private readonly SqsService _sqsService = sqsService;
@@ -50,13 +51,12 @@ public class EnrollmentsController(EnrollmentService service, SqsService sqsServ
         {
             var enrollment = await _service.CreateAsync(dto, Guid.Parse(userId!));
 
-            // quando implementar o webhook ...
-            // var useWebhook = config.GetValue<bool>("APP_USE_WEBHOOK");
-            // if (!useWebhook)
-            // {
-            // }
-            await _sqsService.SendMessageAsync(
-                new PaymentRequestedEvent(enrollment!.Id!.Value));
+            var useWebhook = config.GetValue<bool>("APP_USE_WEBHOOK");
+            if (!useWebhook)
+            {
+                await _sqsService.SendMessageAsync(
+                    new PaymentRequestedEvent(enrollment!.Id!.Value));
+            }
 
             return CreatedAtAction(nameof(GetById), new { id = enrollment.Id }, enrollment);
         }
