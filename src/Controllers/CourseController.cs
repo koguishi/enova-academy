@@ -14,7 +14,14 @@ public class CoursesController(CourseService service) : ControllerBase
     private readonly CourseService _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
+    public async Task<IActionResult> GetAll()
+    {
+        var courses = await _service.ReadAllAsync();
+        return Ok(courses);
+    }
+
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] string? searchString = null,
