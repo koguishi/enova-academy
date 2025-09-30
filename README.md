@@ -36,7 +36,6 @@ Isso iniciará todos os containers necessários.
 
 ## Acesso aos serviços
 
-* **API**: [http://localhost:8080](http://localhost:8080)
 * **Swagger**: [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
 * **MySQL**: localhost:3306 (`user: root`, `password: root`)
 * **Redis**: localhost:6379
