@@ -4,6 +4,7 @@ using enova_academy.Domain.Entities;
 using enova_academy.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Prometheus;
 
 namespace enova_academy.Application.Services;
 
@@ -12,10 +13,19 @@ public class CourseService
     ICourseRepository Courses { get; }
     private readonly IDistributedCache _cache;
     private const string CoursesCacheKey = "all_courses";
-    public CourseService(ICourseRepository courses, IDistributedCache cache)
+
+    // Métricas Prometheus
+    private static readonly Counter CacheHitCounter = Metrics
+        .CreateCounter("courses_cache_hit_total", "Total de cache hits em listagem de cursos");
+    private static readonly Counter CacheMissCounter = Metrics
+        .CreateCounter("courses_cache_miss_total", "Total de cache misses em listagem de cursos");
+    private readonly ILogger<CourseService> _logger;
+
+    public CourseService(ICourseRepository courses, IDistributedCache cache, ILogger<CourseService> logger)
     {
         Courses = courses;
         _cache = cache;
+        _logger = logger;
     }
 
     public async Task<CourseDto> CreateAsync(CourseDto dto)
@@ -55,8 +65,15 @@ public class CourseService
         var cached = await _cache.GetStringAsync(CoursesCacheKey);
         if (!string.IsNullOrEmpty(cached))
         {
+            CacheHitCounter.Inc(); // incrementa métrica HitCounter
+            // se não trabalhar com Metrics, estudar outra maneira de implementar este contador
+            _logger.LogInformation("CACHE HIT para Courses (Total Hits: {Hits})", CacheHitCounter.Value);
+
             return JsonSerializer.Deserialize<List<CourseDto>>(cached)!;
         }
+        CacheMissCounter.Inc(); // incrementa métrica MissCounter
+        // se não trabalhar com Metrics, estudar outra maneira de implementar este contador
+        _logger.LogInformation("CACHE MISS para Courses (Total Misses: {Misses})", CacheMissCounter.Value);
 
         // 2. Se não tiver cache, busca do banco
         var courses = await Courses.GetAllAsync();
