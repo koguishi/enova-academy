@@ -8,8 +8,23 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configura Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information() // apenas Information, Warning, Error, Critical
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning) // ignora logs do framework
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "logs/log-.json",
+        rollingInterval: RollingInterval.Day,
+        formatter: new Serilog.Formatting.Json.JsonFormatter()
+    )
+    .CreateLogger();
+builder.Host.UseSerilog();
 
 // Configuração Redis
 builder.Services.AddStackExchangeRedisCache(options =>

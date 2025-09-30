@@ -5,11 +5,17 @@ public class PaymentWorker : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly SqsService _sqsService;
+    private readonly ILogger<PaymentWorker> _logger;
 
-    public PaymentWorker(IServiceScopeFactory scopeFactory, SqsService sqsService)
+    public PaymentWorker(
+        IServiceScopeFactory scopeFactory,
+        SqsService sqsService,
+        ILogger<PaymentWorker> logger
+    )
     {
         _scopeFactory = scopeFactory;
         _sqsService = sqsService;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -35,6 +41,8 @@ public class PaymentWorker : BackgroundService
 
                         enrollment.SetStatus("paid");
                         await db.SaveChangesAsync(stoppingToken);
+
+                        _logger.LogInformation("Enrollment {enrollmentId} set to PAID by Worker", enrollment.Id);
 
                         Console.WriteLine($@" >>> [WELCOME_EMAIL - via SQS] to enrollment: {enrollment.Id} <<< ");
                     }

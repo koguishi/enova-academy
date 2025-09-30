@@ -11,10 +11,11 @@ namespace enova_academy.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class EnrollmentsController(EnrollmentService service,
-    SqsService sqsService, IConfiguration config) : ControllerBase
+    SqsService sqsService, IConfiguration config, ILogger<CoursesController> logger) : ControllerBase
 {
     private readonly EnrollmentService _service = service;
     private readonly SqsService _sqsService = sqsService;
+    private readonly ILogger<CoursesController> _logger = logger;
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -56,6 +57,7 @@ public class EnrollmentsController(EnrollmentService service,
             {
                 await _sqsService.SendMessageAsync(
                     new PaymentRequestedEvent(enrollment!.Id!.Value));
+                _logger.LogInformation("Enrollment {enrollmentId} sent to Worker", enrollment!.Id!.Value);
             }
 
             return CreatedAtAction(nameof(GetById), new { id = enrollment.Id }, enrollment);
