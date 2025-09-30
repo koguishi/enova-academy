@@ -29,16 +29,17 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Configuração Redis
+var connectionStringRedis = builder.Configuration.GetConnectionString("Redis");
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.Configuration = connectionStringRedis;
     options.InstanceName = "EnovaApi:";
 });
 
 // Configuração MySQL
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionStringMysql = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionStringMysql, ServerVersion.AutoDetect(connectionStringMysql)));
 
 // Configuração Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -74,13 +75,16 @@ builder.Services.AddHealthChecks()
         Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
 
 // Se você tiver banco ou Redis, pode adicionar checks:
-builder.Services.AddHealthChecks()
-   .AddRedis("localhost:6379", name: "redis");
-if (connectionString != null)
+if (connectionStringRedis != null)
+{
+    builder.Services.AddHealthChecks()
+        .AddRedis(connectionStringRedis, name: "redis");
+}
+if (connectionStringMysql != null)
 {
     builder.Services.AddHealthChecks()
     .AddMySql(
-        connectionString,
+        connectionStringMysql,
         name: "mysql",
         healthQuery: "SELECT 1;"
     );

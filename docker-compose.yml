@@ -29,7 +29,9 @@ services:
       - SQS_QUEUE_URL=http://localstack:4566/000000000000/payment-queue
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
-      - APP_USE_WEBHOOK=false
+      - APP_USE_WEBHOOK=true
+      - AWS__ServiceURL=http://localstack:4566
+      - ConnectionStrings__Redis=redis:6379
     networks:
       - backend
 
