@@ -4,15 +4,17 @@ using enova_academy.Data;
 using enova_academy.Data.Repositories;
 using enova_academy.Domain.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configura Serilog
+// Configuração Serilog
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information() // apenas Information, Warning, Error, Critical
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning) // ignora logs do framework
@@ -38,11 +40,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// Identity
+// Configuração Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Configura JWT
+// Configuração JWT
 var key = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is not configured.");
 var issuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured.");
 var audience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured.");
@@ -65,6 +67,24 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
     };
 });
+
+// Configuração HealthChecks
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () =>
+        Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
+
+// Se você tiver banco ou Redis, pode adicionar checks:
+builder.Services.AddHealthChecks()
+   .AddRedis("localhost:6379", name: "redis");
+if (connectionString != null)
+{
+    builder.Services.AddHealthChecks()
+    .AddMySql(
+        connectionString,
+        name: "mysql",
+        healthQuery: "SELECT 1;"
+    );
+}
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -115,6 +135,9 @@ builder.Services.AddScoped<EnrollmentService>();
 
 var app = builder.Build();
 
+// Middleware do Prometheus para métricas HTTP
+app.UseHttpMetrics();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
@@ -144,5 +167,23 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await SeedData.InitializeAsync(services);
 }
+
+// Endpoint HealthCheck
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new { key = e.Key, value = e.Value.Status.ToString() })
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+
+// Endpoint Prometheus Metrics
+app.MapMetrics("/metrics");
 
 app.Run();
