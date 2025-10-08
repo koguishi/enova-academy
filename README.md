@@ -45,6 +45,7 @@ Isso iniciará todos os containers necessários.
 * **Prometheus**: [http://localhost:9090](http://localhost:9090)
 * **Grafana**: [http://localhost:3000](http://localhost:3000)
   - *Dashboard de Cache*: [http://localhost:3000/d/ae4ccf58-5a46-44ba-8f8d-0b15d2912b80/cache-number?orgId=1&refresh=5s](http://localhost:3000/d/ae4ccf58-5a46-44ba-8f8d-0b15d2912b80/cache-number?orgId=1&refresh=5s)
+  - *Dashboard de Matrículas*: [http://localhost:3000/d/matriculas/indicadores-de-matriculas?orgId=1&refresh=30s](http://localhost:3000/d/matriculas/indicadores-de-matriculas?orgId=1&refresh=30s)
 ## Inicialização do banco de dados
 
 Migrations roda automaticamente ao subir o container da API.

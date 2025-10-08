@@ -25,6 +25,7 @@ services:
       - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/grafana-datasource.yml
       - ./grafana-dashboard.yml:/etc/grafana/provisioning/dashboards/grafana-dashboard.yml
       - ./grafana-dashboard-cache.json:/var/lib/grafana/dashboards/grafana-dashboard-cache.json
+      - ./grafana-dashboard-matriculas.json:/var/lib/grafana/dashboards/grafana-dashboard-matriculas.json
     depends_on:
       - prometheus
 

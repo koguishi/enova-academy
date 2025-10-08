@@ -1,0 +1,90 @@
+{
+  "id": null,
+  "uid": "matriculas",
+  "title": "Indicadores de Matrículas",
+  "tags": ["domínio", "negócio"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "barchart",
+      "title": "Total de Matrículas por Curso",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "dominio_matriculas_total",
+          "legendFormat": "{{curso}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "orientation": "auto",
+        "barWidth": 0.9,
+        "showValue": "always",
+        "groupWidth": 0.7,
+        "stacking": "none",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "gauge",
+      "title": "% de Matrículas Pagas por Curso",
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "dominio_matriculas_percentual_pago",
+          "legendFormat": "{{curso}}",
+          "refId": "B"
+        }
+      ],
+      "options": {
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "displayMode": "lcd",
+        "valueMode": "color"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "green", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
