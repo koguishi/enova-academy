@@ -1,5 +1,6 @@
 using System.Text;
 using enova_academy.Application.Services;
+using enova_academy.Application.Workers;
 using enova_academy.Data;
 using enova_academy.Data.Repositories;
 using enova_academy.Domain.Repositories;
@@ -146,6 +147,8 @@ builder.Services.AddSingleton<SqsService>();
 var useWebhook = builder.Configuration.GetValue<bool>("APP_USE_WEBHOOK");
 if (!useWebhook)
     builder.Services.AddHostedService<PaymentWorker>();
+
+builder.Services.AddHostedService<MetricsRefreshWorker>();
 
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<CourseService>();
