@@ -9,6 +9,8 @@ O ambiente utiliza **Docker Compose** para subir a aplicação junto com serviç
 * **MySQL** — banco de dados relacional.
 * **Redis** — cache em memória.
 * **LocalStack** — simulação de serviços AWS (ex.: SQS, S3).
+* **Prometheus** — métricas e monitoramento.
+* **Grafana** — visualizador de dados - dashboards de monitoramento.
 
 ## Pré-requisitos
 
@@ -40,7 +42,9 @@ Isso iniciará todos os containers necessários.
 * **MySQL**: localhost:3306 (`user: root`, `password: root`)
 * **Redis**: localhost:6379
 * **LocalStack**: [http://localhost:4566](http://localhost:4566)
-
+* **Prometheus**: [http://localhost:9090](http://localhost:9090)
+* **Grafana**: [http://localhost:3000](http://localhost:3000)
+  - *Dashboard de Cache*: [http://localhost:3000/d/ae4ccf58-5a46-44ba-8f8d-0b15d2912b80/cache-number?orgId=1&refresh=5s](http://localhost:3000/d/ae4ccf58-5a46-44ba-8f8d-0b15d2912b80/cache-number?orgId=1&refresh=5s)
 ## Inicialização do banco de dados
 
 Migrations roda automaticamente ao subir o container da API.
