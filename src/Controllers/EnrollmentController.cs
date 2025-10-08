@@ -111,4 +111,10 @@ public class EnrollmentsController(EnrollmentService service,
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> AtualizarMetricasDeDominio()
+    {
+        await _service.AtualizarMetricasAsync();
+        return NoContent();
+    }
 }
