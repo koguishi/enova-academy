@@ -111,7 +111,7 @@ public class EnrollmentsController(EnrollmentService service,
         }
     }
 
-    [HttpPost]
+    [HttpPost("atualizar-metricas")]
     public async Task<IActionResult> AtualizarMetricasDeDominio()
     {
         await _service.AtualizarMetricasAsync();
